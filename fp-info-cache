@@ -1,4 +1,4 @@
-24737347404107080
+24742573775045641
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -99511,6 +99511,27 @@ Varistor VF
 0
 2
 2
+ndoemcu
+ESP32-C6-DevKitM-1
+ESP32-C6 general-purpose development board, based on ESP32-2-WROOM-1,It has all the ESP32-C6 pins exposed and is easy to connect and use.
+ESP32-C6
+0
+30
+30
+ndoemcu
+ESP32-WROOM-32E
+ESP32-WROOM-32E and ESP32-WROOM-32UE: https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf
+ESP32
+0
+50
+39
+ndoemcu
+ESP32-WROOM-32UE
+ESP32-WROOM-32E and ESP32-WROOM-32UE: https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf
+ESP32
+0
+47
+39
 ndoemcu
 MODULE_ESP32_NODEMCU
 
