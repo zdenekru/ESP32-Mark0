@@ -1,0 +1,23 @@
+%TF.GenerationSoftware,KiCad,Pcbnew,9.0.0*%
+%TF.CreationDate,2025-05-23T23:11:46+02:00*%
+%TF.ProjectId,25Zak001 ESP32 Mark0 Rev1,32355a61-6b30-4303-9120-455350333220,rev?*%
+%TF.SameCoordinates,Original*%
+%TF.FileFunction,Profile,NP*%
+%FSLAX46Y46*%
+G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
+G04 Created by KiCad (PCBNEW 9.0.0) date 2025-05-23 23:11:46*
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+%TA.AperFunction,Profile*%
+%ADD10C,0.050000*%
+%TD*%
+G04 APERTURE END LIST*
+D10*
+X77500000Y-41000000D02*
+X177500000Y-41000000D01*
+X177500000Y-141000000D01*
+X77500000Y-141000000D01*
+X77500000Y-41000000D01*
+M02*

@@ -4,6 +4,11 @@
 	(generator_version "9.0")
 	(uuid "00f718f9-4f40-4613-928b-03108f57cc33")
 	(paper "A4")
+	(title_block
+		(title "ESP32 Weather Station")
+		(rev "1")
+		(company "Zdenek Rusek")
+	)
 	(lib_symbols
 		(symbol "Connector:Conn_01x07_Socket"
 			(pin_names
@@ -4869,7 +4874,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x07_P2.54mm_Vertical"
 			(at 81.28 39.37 0)
 			(effects
 				(font

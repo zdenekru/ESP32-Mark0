@@ -187,7 +187,8 @@
       ],
       "track_widths": [
         0.0,
-        1.0
+        1.0,
+        3.0
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -463,7 +464,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "25Zak001 ESP32 Mark0.kicad_pro",
+    "filename": "25Zak001 ESP32 Mark0 Rev1.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -499,7 +500,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "Manufacturing Files Rev1/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "25Zak001 ESP32 Mark0.step",
