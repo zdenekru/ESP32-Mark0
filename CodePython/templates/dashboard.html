@@ -7,33 +7,57 @@
 </head>
 <body>
   <h2>🌡️ Real-Time Sensor Data</h2>
+  <p id="timestamp">⏱ Timestamp: --</p>
+  <p id="uptime">🔁 Uptime: --</p>
+
+  <div id="outside_temp_plot"></div>
   <div id="temp_plot"></div>
   <div id="humidity_plot"></div>
 
   <script>
     const socket = io();
 
+    let outsideTempData = {
+      x: [], y: [], type: 'scatter', name: 'Outside Temp (°C)'
+    };
     let tempData = {
-      x: [], y: [], type: 'scatter', name: 'Temperature (°C)'
+      x: [], y: [], type: 'scatter', name: 'Indoor Temp (°C)'
     };
     let humData = {
       x: [], y: [], type: 'scatter', name: 'Humidity (%)'
     };
 
-    Plotly.newPlot('temp_plot', [tempData], {title: 'Temperature'});
-    Plotly.newPlot('humidity_plot', [humData], {title: 'Humidity'});
+    Plotly.newPlot('outside_temp_plot', [outsideTempData], {title: '🌤️ Outside Temperature'});
+    Plotly.newPlot('temp_plot', [tempData], {title: '🌡️ Indoor Temperature'});
+    Plotly.newPlot('humidity_plot', [humData], {title: '💧 Humidity'});
 
     socket.on('sensor_update', data => {
       let time = new Date();
 
-      tempData.x.push(time);
-      tempData.y.push(data.temp);
+      // ⏱ Update timestamp & uptime display
+      document.getElementById("timestamp").innerText = "⏱ Timestamp: " + data.timestamp;
+      document.getElementById("uptime").innerText = "🔁 Uptime: " + data.uptime;
 
-      humData.x.push(time);
-      humData.y.push(data.humidity);
+      // 🌤️ Outside temp
+      if (data.temp_outside !== undefined) {
+        outsideTempData.x.push(time);
+        outsideTempData.y.push(data.temp_outside);
+        Plotly.update('outside_temp_plot', {x: [outsideTempData.x], y: [outsideTempData.y]});
+      }
 
-      Plotly.update('temp_plot', {x: [tempData.x], y: [tempData.y]});
-      Plotly.update('humidity_plot', {x: [humData.x], y: [humData.y]});
+      // 🌡️ Indoor temp
+      if (data.temp !== undefined) {
+        tempData.x.push(time);
+        tempData.y.push(data.temp);
+        Plotly.update('temp_plot', {x: [tempData.x], y: [tempData.y]});
+      }
+
+      // 💧 Humidity
+      if (data.humidity !== undefined) {
+        humData.x.push(time);
+        humData.y.push(data.humidity);
+        Plotly.update('humidity_plot', {x: [humData.x], y: [humData.y]});
+      }
     });
   </script>
 </body>
