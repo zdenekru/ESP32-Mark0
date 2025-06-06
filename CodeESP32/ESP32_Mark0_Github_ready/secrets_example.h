@@ -14,4 +14,7 @@
 // OpenWeatherMap API
 #define WEATHER_API_KEY  "your_weather_api_key"
 
+// My local machine IP 
+#define LOCAL_SERVER_URL "http://<your-pc-ip>:5000/data"  // Replace with real IP
+
 #endif

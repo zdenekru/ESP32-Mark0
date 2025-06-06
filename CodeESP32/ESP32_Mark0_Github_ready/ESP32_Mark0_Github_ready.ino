@@ -33,6 +33,21 @@ struct WeatherData {
   String description;
 };
 
+// 🌍 Global weather object (must come AFTER the struct)
+WeatherData globalWeather;
+
+// ======= Timing Variables for the loop part =======
+
+unsigned long lastBlynkTime = 0;
+unsigned long lastWeatherTime = 0;
+unsigned long lastEInkUpdate = 0;
+unsigned long lastFlaskUpdate = 0;
+
+const unsigned long BLYNK_INTERVAL = 5 * 60 * 1000;     // 5 minutes
+const unsigned long WEATHER_INTERVAL = 5 * 60 * 1000;   // 5 minutes
+const unsigned long EINK_INTERVAL = 3 * 60 * 1000;      // 3 minutes
+const unsigned long FLASK_INTERVAL = 30 * 1000;         // 30 seconds
+
 // 🆕 Fetch weather from OpenWeatherMap
 WeatherData fetchWeather() {
   WeatherData data = {0, 0, "Načítám..."};
@@ -98,6 +113,35 @@ String getUptime() {
   snprintf(uptimeString, sizeof(uptimeString), "%02lu:%02lu:%02lu", hours, minutes, seconds);
   
   return String(uptimeString);
+}
+
+// 🧪 Send data to local Flask server
+
+void sendToLocalServer(float temp, float hum, WeatherData weather, String uptime, String currentTime) {
+  HTTPClient http;
+  http.begin(LOCAL_SERVER_URL);
+  http.addHeader("Content-Type", "application/json");
+
+  StaticJsonDocument<512> doc;
+  doc["uptime"] = uptime;
+  doc["timestamp"] = currentTime;
+  doc["temp_inside"] = temp;
+  doc["humidity"] = hum;
+  doc["temp_outside"] = weather.temp;
+  doc["feels_like"] = weather.feels_like;
+  doc["description"] = weather.description;
+
+  String jsonPayload;
+  serializeJson(doc, jsonPayload);
+
+  int httpResponseCode = http.POST(jsonPayload);
+  if (httpResponseCode > 0) {
+    Serial.println("📡 Local server response: " + String(httpResponseCode));
+  } else {
+    Serial.println("❌ Failed to connect to local server");
+  }
+
+  http.end();
 }
 
 // ==== Function: Read sensor and update Blynk + e-Ink ====
@@ -177,6 +221,9 @@ void sendSensor()
   } while (display.nextPage());
 
   Serial.println("🖥️  E-Ink display updated.");
+
+  // 🧪 Send to local Flask dashboard
+  sendToLocalServer(t, h, weather, uptime, currentTime);
 }
 
 
@@ -215,13 +262,56 @@ void setup()
   ArduinoOTA.begin();
   Serial.println("🔄 OTA Ready!");
 
-  // Every 180s = 3min (180000 ms)
-  timer.setInterval(180000L, sendSensor);
 }
 
-void loop()
-{
+void loop() {
+  unsigned long now = millis();
+
   Blynk.run();
-  timer.run();
-  ArduinoOTA.handle();  // 👈 Required for OTA!
+  ArduinoOTA.handle();
+  timer.run();  // Still running for backward compatibility (e.g., display update)
+
+  // Fetch weather every 5 minutes
+  if (now - lastWeatherTime >= WEATHER_INTERVAL) {
+    globalWeather = fetchWeather();
+    lastWeatherTime = now;
+  }
+
+  // Send Blynk data every 5 minutes
+  if (now - lastBlynkTime >= BLYNK_INTERVAL) {
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    String uptime = getUptime();
+
+    if (!isnan(h) && !isnan(t)) {
+      Blynk.virtualWrite(V1, uptime);
+      Blynk.virtualWrite(V5, h);
+      Blynk.virtualWrite(V6, t);
+      Blynk.virtualWrite(V7, globalWeather.temp);
+      Blynk.virtualWrite(V8, globalWeather.feels_like);
+      Blynk.virtualWrite(V9, globalWeather.description);
+    }
+
+    lastBlynkTime = now;
+  }
+
+  // Update e-Ink display every 3 minutes
+  if (now - lastEInkUpdate >= EINK_INTERVAL) {
+    sendSensor();  // This updates display + sends to local Flask too
+    lastEInkUpdate = now;
+  }
+
+  // Send data to local Flask every 30 seconds
+  if (now - lastFlaskUpdate >= FLASK_INTERVAL) {
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    String uptime = getUptime();
+    String currentTime = getCurrentTime();
+
+    if (!isnan(h) && !isnan(t)) {
+      sendToLocalServer(t, h, globalWeather, uptime, currentTime);
+    }
+
+    lastFlaskUpdate = now;
+  }
 }
