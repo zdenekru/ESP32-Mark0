@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 Sensor Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>🌡️ Real-Time Sensor Data</h2>
+  <div id="temp_plot"></div>
+  <div id="humidity_plot"></div>
+
+  <script>
+    const socket = io();
+
+    let tempData = {
+      x: [], y: [], type: 'scatter', name: 'Temperature (°C)'
+    };
+    let humData = {
+      x: [], y: [], type: 'scatter', name: 'Humidity (%)'
+    };
+
+    Plotly.newPlot('temp_plot', [tempData], {title: 'Temperature'});
+    Plotly.newPlot('humidity_plot', [humData], {title: 'Humidity'});
+
+    socket.on('sensor_update', data => {
+      let time = new Date();
+
+      tempData.x.push(time);
+      tempData.y.push(data.temp);
+
+      humData.x.push(time);
+      humData.y.push(data.humidity);
+
+      Plotly.update('temp_plot', {x: [tempData.x], y: [tempData.y]});
+      Plotly.update('humidity_plot', {x: [humData.x], y: [humData.y]});
+    });
+  </script>
+</body>
+</html>
